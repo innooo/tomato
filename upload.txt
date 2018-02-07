@@ -1,1 +1,2 @@
-http://eternalsky.me:8122/file/upload
+图片上传：http://eternalsky.me:8122/file/upload
+参考链接：https://segmentfault.com/a/1190000013038300
