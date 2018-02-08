@@ -5,36 +5,15 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
     <title>图片上传</title>
-    <style>
-        .wrapper{
-            width:500px;
-            border:1px solid #cecece;
-            padding:10px;
-            padding-right:30px;
-            display:flex;
-        }
-        .file_cut{
-            flex:1;
-            margin-right:10px;
-            border:1px dashed #cecece;
-        }
-        .file_preview{
-            width:100px;
-            border:1px dashed #cecece;
-        }
-        .file_btn_container{
-            display:flex;
-            justify-content: space-between;
-        }
-        .file_btn{
-            font-size:16px;
-            padding:5px 20px;
-        }
-    </style>
+    <link rel="stylesheet" href="index.css">
 </head>
 <body>
     <div class="wrapper">
-        <div class="file_cut">
+        <div class="file_show">
+            <div class="file_cut">
+                <!-- <img src="" alt="" id="img" /> -->
+                <canvas id="imgCanvas" width="350" height="300"></canvas>
+            </div>
             <div class="file_btn_container">
                 <label for="file" class="file_btn file_sel">
                     选择图片
@@ -44,11 +23,107 @@
             </div>
         </div>
         <div class="file_preview">
-
+            <canvas id="previewCanvas" width="130" height="130"></canvas>
         </div>
     </div>
 </body>
 <script>
+// 获取文件上传控件
+let imgForm = document.getElementById('file');
+// 创建表单数据实例
+let myFormData = new FormData();
+function loadImg() {
+    // 获取文件
+    let imgData = imgForm.files[0];
+    // 向表单对象中添加数据
+    myFormData.append('image',imgData);
+    // console.log(myFormData.getAll('image'));
+    // 创建fileReader对象
+    let reader = new FileReader();
+    reader.readAsDataURL(imgData);
+    reader.onload = function(e) {
+        imgSource = e.target.result;
+        // console.log(e.target.result);
+        // 获取img元素
+        // let img = document.getElementById('img');
+        // img.src = e.target.result;
+        let img = new Image(); // 创建image对象
+        img.src = imgSource;
+        // 图片加载成功后绘制canvas
+        img.onload = function() {
+            let theCanvas = document.getElementById('imgCanvas');
+            let canvasImg = theCanvas.getContext('2d') // 获取2d上下文
+            canvasImg.drawImage(img, 0, 0);
+            // 在图片选择区添加事件实现图片的选择
+            let endX, endY, startX, startY;
+            const W = theCanvas.width;
+            const H = theCanvas.height;
+            let flag = false; // 用于判断是否处于选择状态
+            // 预览区画布
+            let previewCanvas = document.getElementById('previewCanvas');
+            let previewContext = previewCanvas.getContext('2d');
+            const preW = previewCanvas.width;
+            const preH = previewCanvas.height;
+            theCanvas.addEventListener('mousedown', function(e) {
+                // 记录选择起点
+                flag = true;
+                startX = e.layerX;
+                startY = e.layerY;
+                let cutImg; // 选取得图片
+                let resultFile = {}; // 选取的图片所转化为的数据
+                // 绑定鼠标移动事件
+                document.addEventListener('mousemove', function(e) {
+                    // 如果当前处于选择状态
+                    if(flag) {
+                        // 记录当前绘制终点
+                        endX = e.layerX - startX <= preW ? e.layerX : startX + preW;
+                        endY = e.layerY - startY <= preH ? e.layerY : startY + preH;
+                        if(e.layerX - startX !== 0 && e.layerY - startY !== 0 ) {
+                            canvasImg.clearRect(0, 0, W, H); // 清空整个画布
+                            canvasImg.drawImage(img, 0, 0); // 绘制选择的图片
+                            // canvasImg.strokeRect(startX, startY, endX, endY); // 绘制选择框
+                            // 绘制蒙版
+                            // 左上矩形
+                            let LTrectEndX = endX;
+                            let LTrectEndY = startY;
+                            // 右上矩形
+                            let RTrectStartX = endX;
+                            let RTrectEndY = endY;
+                            // 右下矩形
+                            let RDrectStartX = startX;
+                            let RDrectStartY = endY;
+                            // 左下矩形
+                            let LDrectStartY = startY;
+                            let LDrectEndX = startX;
+                            // 绘制四块矩形拼接成蒙版
+                            canvasImg.fillStyle = 'rgba(255,255,255,0.3)';
+                            canvasImg.fillRect(0, 0, LTrectEndX, LTrectEndY);
+                            canvasImg.fillRect(RTrectStartX, 0, W, RTrectEndY); 
+                            canvasImg.fillRect(RDrectStartX, RDrectStartY, W, H); 
+                            canvasImg.fillRect(0, LDrectStartY, LDrectEndX, H);
+                            // 绘制图片预览区域
+                            cutImg = canvasImg.getImageData(startX, startY, e.layerX - startX, e.layerY - startY); // 截取的图片区域
+                            previewContext.clearRect(0, 0, preW, preH) // 清空预览区画布
+                            previewContext.putImageData(cutImg, 0, 0)
+                        }
+                    }
+                });
+                // 鼠标抬起
+                document.addEventListener('mouseup', function() {
+                    if(flag) {
+                        flag = false;
+                        // 将图片预览区域的内容转化为blob数据
+                        previewCanvas.toBlob(blob => {
+                            resultFile = blob;
+                            console.log(resultFile);
+                        });
+                    }
+                })
+            });
+        }
+    }
+}
+imgForm.onchange = loadImg;
 
 </script>
 </html>
