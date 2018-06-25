@@ -1,59 +1,27 @@
-// 引入工具
 import React, { Component } from 'react';
-import { connect } from 'react-redux';
-import { action, asyncAction } from './index.redux'; // 引入action creator
+import {
+  BrowserRouter as Router,
+  Route,
+  Switch,
+  Redirect
+} from 'react-router-dom';
 
-// 引入ui组件
-import { Button, List } from 'antd-mobile';
-const Item = List.Item;
-
-
-const mapStateToProps = state => {
-  return {num: state}; // 将store中的状态state映射到这个组件的props中，num即为props的一个属性
-}
-
-const actionCreators = {action, asyncAction}; // 将action同样映射到本组件的props中去
-
-@connect(mapStateToProps, actionCreators) // 高阶组件（通过装饰器的写法）
+// ui组件引用
+import Login from './pages/auth';
+import Dashboard from './pages/dashboard';
 
 class App extends Component {
-  handleItemClick(item, e) {
-    console.log(item);
-  }
   render() {
-    const { num, action, asyncAction } = this.props; // 这里面的变量都是通过connect高阶组件包装传进来的props
     return (
-      <div className="App">
-        <List
-          renderHeader={() => num} // 通过从store中获取
-        >
-          {[1,2,3].map((item) => {
-            return <Item
-                    key={item}
-                    extra={'No' + item}
-                    onClick={e => {this.handleItemClick(item, e)}}
-                  >{'name: ' + item}</Item>
-          })}
-        </List>
-        <Button
-          type="primary"
-          onClick={() => {action('ADD')}}
-        >按钮</Button>
-        <Button
-          type=""
-          onClick={() => {asyncAction('ADD')}}
-        >异步</Button>
-      </div>
+      <Router>
+        <Switch>
+          <Route path="/login" exact component={Login}></Route>
+          <Route path="/dashboard" component={Dashboard}></Route>
+          <Redirect to="/dashboard" />
+        </Switch>
+      </Router>
     );
   }
 }
-
-// const mapStateToProps = state => {
-//   return {num: state}; // 将store中的状态state映射到这个组件的props中，num即为props的一个属性
-// }
-
-// const actionCreators = {action, asyncAction}; // 将action同样映射到本组件的props中去
-
-// App = connect(mapStateToProps, actionCreators)(App); // 高阶组件（装饰器）
 
 export default App;

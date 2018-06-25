@@ -1,5 +1,5 @@
 // reducer定义
-export function counter(state = 0, action) {
+export const dashboardReducer = (state = 0, action) => {
   let newState = state;
   switch(action.type) {
     case 'ADD': 
@@ -15,7 +15,7 @@ export function counter(state = 0, action) {
 }
 
 // action creator
-export function action(type, data) {
+export function dashboardAction(type, data) {
   return {
     type: type,
     data: data
@@ -23,10 +23,10 @@ export function action(type, data) {
 }
 
 // async action creator
-export function asyncAction(type, data) {
+export function asyncDashboardAction(type, data) {
   return dispatch => {
     setTimeout(() => {
-      dispatch(action(type, data));
+      dispatch(dashboardAction(type, data));
     }, 2000);
   }
 }
