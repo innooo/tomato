@@ -7,6 +7,15 @@ import { action, asyncAction } from './index.redux'; // 引入action creator
 import { Button, List } from 'antd-mobile';
 const Item = List.Item;
 
+
+const mapStateToProps = state => {
+  return {num: state}; // 将store中的状态state映射到这个组件的props中，num即为props的一个属性
+}
+
+const actionCreators = {action, asyncAction}; // 将action同样映射到本组件的props中去
+
+@connect(mapStateToProps, actionCreators) // 高阶组件（通过装饰器的写法）
+
 class App extends Component {
   handleItemClick(item, e) {
     console.log(item);
@@ -39,12 +48,12 @@ class App extends Component {
   }
 }
 
-const mapStateToProps = state => {
-  return {num: state}; // 将store中的状态state映射到这个组件的props中，num即为props的一个属性
-}
+// const mapStateToProps = state => {
+//   return {num: state}; // 将store中的状态state映射到这个组件的props中，num即为props的一个属性
+// }
 
-const actionCreators = {action, asyncAction}; // 将action同样映射到本组件的props中去
+// const actionCreators = {action, asyncAction}; // 将action同样映射到本组件的props中去
 
-App = connect(mapStateToProps, actionCreators)(App); // 高阶组件（装饰器）
+// App = connect(mapStateToProps, actionCreators)(App); // 高阶组件（装饰器）
 
 export default App;
