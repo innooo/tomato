@@ -7,6 +7,9 @@ import { Provider } from 'react-redux';
 // ui组件引用
 import App from './App';
 
+// axios 拦截器
+import './config';
+
 // 引入reducer
 import reducers from './redux/reducer';
 
