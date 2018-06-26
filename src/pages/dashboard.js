@@ -27,7 +27,7 @@ const Erying = props => (
 
 class Dashboard extends Component {
   render() {
-    const { authReducer, authAction } = this.props;
+    const { authReducer, authAction, match } = this.props;
     const app = (
       <div>
         <Button onClick={() => {authAction('LOGOUT')}}>注销</Button>
@@ -36,17 +36,17 @@ class Dashboard extends Component {
         >
           <Item
             extra={"一营"}
-          ><Link to="/dashboard/yiying">一营</Link></Item>
+          ><Link to={`${match.url}/yiying`}>一营</Link></Item>
           <Item
             extra={"二营"}
-          ><Link to="/dashboard/erying">二营</Link></Item>
+          ><Link to={`${match.url}/erying`}>二营</Link></Item>
           <Item
             extra={"三营"}
-          ><Link to="/dashboard/sanying">三营</Link></Item>
+          ><Link to={`${match.url}/sanying`}>三营</Link></Item>
         </List>
-        <Route path="/dashboard/yiying" component={Yiying} />
-        <Route path="/dashboard/erying" component={Erying} />
-        <Route path="/dashboard/sanying" component={Sanying} />
+        <Route path={`${match.url}/yiying`} component={Yiying} />
+        <Route path={`${match.url}/erying`} component={Erying} />
+        <Route path={`${match.url}/sanying`} component={Sanying} />
       </div>
     );
     const login = <Redirect to="/login" />;
