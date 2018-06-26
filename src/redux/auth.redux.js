@@ -1,6 +1,13 @@
+import axios from 'axios';
 // reducer定义
-export const authReducer =  (state = {isAuth: false, user: 'aaa'}, action) => {
+const initialState = {
+  isAuth: false,
+  user: '',
+  age: ''
+};
+export const authReducer =  (state = initialState, action) => {
   let newState = state;
+  let payload = action.payload;
   switch(action.type) {
     case 'LOGIN': 
     newState = {...state, isAuth: true};
@@ -8,15 +15,31 @@ export const authReducer =  (state = {isAuth: false, user: 'aaa'}, action) => {
     case 'LOGOUT':
     newState = {...state, isAuth: false};
     break;
+    case 'GET_DATA':
+    newState = {...state, ...payload};
+    break;
     default:
     break;
   }
   return newState;
 }
 
-export const authAction = (type, data) => {
+export const getData = () => (
+  dispatch => {
+    axios.get('/data').then((res) => {
+      if(res.status === 200) {
+        dispatch({
+          type: 'GET_DATA',
+          payload: res.data
+        });
+      }
+    });
+  } 
+);
+
+export const authAction = (type, payload) => {
   return {
     type: type,
-    data: data
+    payload: payload
   }
 }
